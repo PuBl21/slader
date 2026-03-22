@@ -77,8 +77,9 @@ const fileBefore = document.getElementById('fileBefore');
 const fileAfter  = document.getElementById('fileAfter');
 const previewBefore = document.getElementById('previewBefore');
 const previewAfter  = document.getElementById('previewAfter');
-const startBtn = document.getElementById('startBtn');
-const backBtn  = document.getElementById('backBtn');
+const startBtn   = document.getElementById('startBtn');
+const backBtn    = document.getElementById('backBtn');
+const shareWrap  = document.getElementById('shareWrap');
 
 let urlBefore = null;
 let urlAfter  = null;
@@ -129,6 +130,7 @@ startBtn.addEventListener('click', () => {
 backBtn.addEventListener('click', (e) => {
   e.stopPropagation();
   sliderContainer.style.display = 'none';
+  shareWrap.style.display = 'none';
   uploadScreen.style.display = 'flex';
   setPosition(50);
 });
@@ -136,6 +138,7 @@ backBtn.addEventListener('click', (e) => {
 function launchSlider(srcBefore, srcAfter) {
   uploadScreen.style.display = 'none';
   sliderContainer.style.display = 'flex';
+  shareWrap.style.display = 'flex';
 
   requestAnimationFrame(() => {
     const card = document.getElementById('sliderCard');
@@ -211,6 +214,7 @@ document.addEventListener('pointercancel', () => {
 container.addEventListener('pointerdown', (e) => {
   if (divider.contains(e.target)) return;
   if (backBtn.contains(e.target)) return;
+  if (shareWrap.contains(e.target)) return;
   isDragging = true;
   container.setPointerCapture(e.pointerId);
   setPosition(clientXToPercent(e.clientX));
@@ -288,6 +292,8 @@ shareBtn.addEventListener('click', async () => {
     } else {
       const link = `${window.location.origin}${window.location.pathname}?b=${encodeURIComponent(urlB)}&a=${encodeURIComponent(urlA)}`;
       alert('Ссылка: ' + link);
+      shareBtn.disabled = false;
+      shareBtn.textContent = 'Поделиться';
     }
   } catch (err) {
     alert('Ошибка загрузки. Попробуйте ещё раз.');
@@ -318,6 +324,7 @@ function checkURLParams() {
   if (b && a) {
     uploadScreen.style.display = 'none';
     launchSlider(decodeURIComponent(b), decodeURIComponent(a));
+    shareWrap.style.display = 'flex';
   }
 }
 
