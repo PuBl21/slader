@@ -249,6 +249,53 @@ imgAfter.addEventListener('error', () => {
   onImageReady();
 });
 
+/* ─── Cloudinary Upload ─────────────────────────────────────────────── */
+
+async function uploadToCloudinary(dataUrl) {
+  const blob = await (await fetch(dataUrl)).blob();
+  const formData = new FormData();
+  formData.append('file', blob);
+  formData.append('upload_preset', 'PHOOTO');
+
+  const res = await fetch('https://api.cloudinary.com/v1_1/dxgbh5vnd/image/upload', {
+    method: 'POST',
+    body: formData
+  });
+
+  if (!res.ok) throw new Error('Upload failed');
+  const data = await res.json();
+  return data.secure_url;
+}
+
+/* ─── Share Button ──────────────────────────────────────────────────── */
+
+const shareBtn = document.getElementById('shareBtn');
+
+shareBtn.addEventListener('click', async () => {
+  shareBtn.disabled = true;
+  shareBtn.textContent = 'Загрузка...';
+
+  try {
+    const [urlB, urlA] = await Promise.all([
+      uploadToCloudinary(urlBefore),
+      uploadToCloudinary(urlAfter)
+    ]);
+
+    const payload = JSON.stringify({ b: urlB, a: urlA });
+
+    if (tg) {
+      tg.sendData(payload);
+    } else {
+      const link = `${window.location.origin}${window.location.pathname}?b=${encodeURIComponent(urlB)}&a=${encodeURIComponent(urlA)}`;
+      alert('Ссылка: ' + link);
+    }
+  } catch (err) {
+    alert('Ошибка загрузки. Попробуйте ещё раз.');
+    shareBtn.disabled = false;
+    shareBtn.textContent = 'Поделиться';
+  }
+});
+
 /* ─── Init ──────────────────────────────────────────────────────────── */
 
 if (!tg) applyViewportFix(null);
@@ -261,3 +308,17 @@ window.addEventListener('resize', () => {
     document.documentElement.style.setProperty('--slider-w', card.offsetWidth + 'px');
   }
 });
+
+/* ─── URL Params ────────────────────────────────────────────────────── */
+
+function checkURLParams() {
+  const params = new URLSearchParams(window.location.search);
+  const b = params.get('b');
+  const a = params.get('a');
+  if (b && a) {
+    uploadScreen.style.display = 'none';
+    launchSlider(decodeURIComponent(b), decodeURIComponent(a));
+  }
+}
+
+checkURLParams();

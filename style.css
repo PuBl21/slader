@@ -310,6 +310,36 @@ body {
   background: rgba(0, 0, 0, 0.7);
 }
 
+/* ─── Share Button ──────────────────────────────────────────────────── */
+.share-btn {
+  position: absolute;
+  bottom: calc(var(--safe-bottom) + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  padding: 12px 28px;
+  border-radius: 24px;
+  border: none;
+  background: var(--tg-theme-button-color, #2481cc);
+  color: var(--tg-theme-button-text-color, #fff);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  transition: opacity 0.2s;
+}
+
+.share-btn:active {
+  opacity: 0.8;
+}
+
+.share-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 /* ─── Loading Overlay ───────────────────────────────────────────────── */
 .loading-overlay {
   position: absolute;
